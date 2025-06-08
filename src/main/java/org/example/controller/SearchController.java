@@ -14,18 +14,6 @@ public class SearchController {
     private SearchService searchService;
     
     @PostMapping("/flights")
-    public ResponseEntity<FlightDetailsResponse> createFlight(@RequestBody FlightCreateRequest request) {
-        try {
-            FlightDetailsResponse response = searchService.createFlight(request);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-    
-    @PostMapping("/flights")
     public ResponseEntity<SearchResponse> searchFlights(@RequestBody SearchRequest request) {
         return ResponseEntity.ok(searchService.search(request));
     }
