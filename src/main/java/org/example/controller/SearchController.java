@@ -5,13 +5,21 @@ import org.example.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/v1/search")
 public class SearchController {
     
+    private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
+    
     @Autowired
     private SearchService searchService;
+    
+    @Autowired
+    private ObjectMapper objectMapper;
     
     @PostMapping("/flights")
     public ResponseEntity<SearchResponse> searchFlights(@RequestBody SearchRequest request) {

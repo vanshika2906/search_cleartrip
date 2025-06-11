@@ -7,19 +7,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PathFindingService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(PathFindingService.class);
     
     @Autowired
     private FlightRepository flightRepository;
     
     public List<List<Flight>> findPaths(Airport source, Airport destination, LocalDateTime date, int maxStops) {
+        logger.info("Finding paths from {} to {} on {}", source.getCode(), destination.getCode(), date);
+
+        
         List<List<Flight>> allPaths = new ArrayList<>();
         Set<String> visited = new HashSet<>();
         List<Flight> currentPath = new ArrayList<>();
         
         findPathsDFS(source, destination, date, maxStops, visited, currentPath, allPaths);
+        logger.info("Found {} paths", allPaths.size());
         return allPaths;
     }
     
@@ -37,6 +45,7 @@ public class PathFindingService {
         
         // Get all possible next flights from current airport
         List<Flight> nextFlights = getNextFlights(current, date);
+        logger.info("Found {} next flights from {}", nextFlights.size(), current.getCode());
         
         for (Flight flight : nextFlights) {
             String flightKey = flight.getId();
@@ -72,6 +81,11 @@ public class PathFindingService {
     }
     
     private List<Flight> getNextFlights(Airport airport, LocalDateTime afterTime) {
-        return flightRepository.findNextFlights(airport, afterTime);
+        // Set afterTime to start of the day
+        LocalDateTime startOfDay = afterTime.toLocalDate().atStartOfDay();
+        logger.info("Getting next flights from {} after {}", airport.getCode(), startOfDay);
+        List<Flight> flights = flightRepository.findNextFlights(airport.getId(), startOfDay);
+        logger.info("Found {} flights", flights.size());
+        return flights;
     }
 } 

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "flights")
+@Table(name = "flight")
 public class Flight {
     @Id
     private String id;  // Provided by Catalogue Service
@@ -41,9 +41,6 @@ public class Flight {
 
     @Column(name = "total_seats", nullable = false)
     private Integer totalSeats;
-
-    @Column(name = "stops", nullable = false)
-    private Integer stops;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

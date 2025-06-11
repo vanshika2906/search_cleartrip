@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS flight (
     destination_airport_id BIGINT NOT NULL,
     available_seats INTEGER NOT NULL,
     total_seats INTEGER NOT NULL,
-    stops INTEGER DEFAULT 0,
+    status VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (source_airport_id) REFERENCES airport(id),

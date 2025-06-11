@@ -28,18 +28,18 @@ public class CacheService {
     private static final int MAX_CACHE_MISSES = 3;
 
     // Search Cache Operations
-    @Cacheable(value = "searchCache", key = "#sourceAirportId + ':' + #destinationAirportId + ':' + #date")
+    //@Cacheable(value = "searchCache", key = "#sourceAirportId + ':' + #destinationAirportId + ':' + #date")
     public List<FlightPath> getCachedPaths(Long sourceAirportId, Long destinationAirportId, String date) {
         return null; // Will be populated by the service layer
     }
 
-    @CacheEvict(value = "searchCache", key = "#searchKey")
+    //@CacheEvict(value = "searchCache", key = "#searchKey")
     public void invalidateSearchCache(String searchKey) {
         // Method to explicitly invalidate specific search cache
     }
 
     // Price Cache Operations
-    @Cacheable(value = "priceCache", key = "#flightId", unless = "#result == null")
+    //@Cacheable(value = "priceCache", key = "#flightId", unless = "#result == null")
     public BigDecimal getCachedPrice(String flightId) {
         String cacheKey = "price:" + flightId;
         if (shouldPreventCacheStampede(cacheKey)) {
@@ -48,7 +48,7 @@ public class CacheService {
         return null; // Will be populated by the service layer
     }
 
-    @CacheEvict(value = "priceCache", key = "#flightId")
+    //@CacheEvict(value = "priceCache", key = "#flightId")
     public void invalidatePriceCache(String flightId) {
         // Method to explicitly invalidate price cache for a specific flight
     }
@@ -62,7 +62,7 @@ public class CacheService {
     }
 
     // Seat Cache Operations
-    @Cacheable(value = "seatCache", key = "#flightId", unless = "#result == null")
+    //@Cacheable(value = "seatCache", key = "#flightId", unless = "#result == null")
     public Integer getCachedSeats(String flightId) {
         String cacheKey = "seat:" + flightId;
         if (shouldPreventCacheStampede(cacheKey)) {
@@ -71,7 +71,7 @@ public class CacheService {
         return null; // Will be populated by the service layer
     }
 
-    @CacheEvict(value = "seatCache", key = "#flightId")
+    //@CacheEvict(value = "seatCache", key = "#flightId")
     public void invalidateSeatCache(String flightId) {
         // Method to explicitly invalidate seat cache for a specific flight
     }
@@ -85,7 +85,7 @@ public class CacheService {
     }
 
     // Flight Details Cache Operations
-    @Cacheable(value = "flightCache", key = "#flightId", unless = "#result == null")
+    //@Cacheable(value = "flightCache", key = "#flightId", unless = "#result == null")
     public FlightDetailsResponse getCachedFlightDetails(String flightId) {
         String cacheKey = "flight:" + flightId;
         if (shouldPreventCacheStampede(cacheKey)) {
@@ -94,7 +94,7 @@ public class CacheService {
         return null; // Will be populated by the service layer
     }
 
-    @CacheEvict(value = "flightCache", key = "#flightId")
+    //@CacheEvict(value = "flightCache", key = "#flightId")
     public void invalidateFlightCache(String flightId) {
         // Method to explicitly invalidate flight details cache
     }

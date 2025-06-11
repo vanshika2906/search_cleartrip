@@ -1,0 +1,267 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Cleartrip Search Service",
+		"description": "Collection of APIs for the Cleartrip Search Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Search APIs",
+			"item": [
+				{
+					"name": "Search Flights",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sourceAirportId\": 1,\n    \"destinationAirportId\": 2,\n    \"date\": \"2024-06-10\",\n    \"passengers\": 1,\n    \"sortBy\": \"price\",\n    \"filters\": {\n        \"stops\": \"direct\",\n        \"priceRange\": {\n            \"minPrice\": 1000,\n            \"maxPrice\": 5000\n        },\n        \"airlines\": [1, 2]\n    }\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/search/flights",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "search", "flights"]
+						},
+						"description": "Search for flights based on source, destination, and date"
+					}
+				},
+				{
+					"name": "Get Flight Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/search/flights/FL123",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "search", "flights", "FL123"]
+						},
+						"description": "Get detailed information about a specific flight"
+					}
+				},
+				{
+					"name": "Update Price",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flightId\": \"FL123\",\n    \"newPrice\": 2500.00\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/search/flights/price",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "search", "flights", "price"]
+						},
+						"description": "Update the price of a flight"
+					}
+				},
+				{
+					"name": "Update Seats",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flightId\": \"FL123\",\n    \"newAvailableSeats\": 50\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/search/flights/seats",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "search", "flights", "seats"]
+						},
+						"description": "Update the available seats for a flight"
+					}
+				}
+			]
+		},
+		{
+			"name": "Catalogue APIs",
+			"item": [
+				{
+					"name": "Create Flight Entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sourceAirportId\": 1,\n    \"destinationAirportId\": 2,\n    \"departureTime\": \"10:00:00\",\n    \"startDate\": \"2024-06-01\",\n    \"endDate\": \"2024-06-30\",\n    \"daysAllowed\": [\"MONDAY\", \"WEDNESDAY\", \"FRIDAY\"],\n    \"flightNumber\": \"FL123\",\n    \"totalSeats\": 180\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/catalogue/flight-entry",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "catalogue", "flight-entry"]
+						},
+						"description": "Create a new flight entry in the catalogue"
+					}
+				},
+				{
+					"name": "Get Flight Schedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/catalogue/flight-schedule?sourceAirportId=1&destinationAirportId=2&startDate=2024-06-01&endDate=2024-06-30",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "catalogue", "flight-schedule"],
+							"query": [
+								{
+									"key": "sourceAirportId",
+									"value": "1"
+								},
+								{
+									"key": "destinationAirportId",
+									"value": "2"
+								},
+								{
+									"key": "startDate",
+									"value": "2024-06-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-06-30"
+								}
+							]
+						},
+						"description": "Get flight schedule for a specific route and date range"
+					}
+				},
+				{
+					"name": "Update Flight Entry",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sourceAirportId\": 1,\n    \"destinationAirportId\": 2,\n    \"departureTime\": \"11:00:00\",\n    \"startDate\": \"2024-06-01\",\n    \"endDate\": \"2024-06-30\",\n    \"daysAllowed\": [\"MONDAY\", \"WEDNESDAY\", \"FRIDAY\"],\n    \"flightNumber\": \"FL123\",\n    \"totalSeats\": 200\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/catalogue/flight-entry/FL123",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "catalogue", "flight-entry", "FL123"]
+						},
+						"description": "Update an existing flight entry"
+					}
+				},
+				{
+					"name": "Generate Flights",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/catalogue/generate-flights?startDate=2024-06-01&endDate=2024-06-30",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "catalogue", "generate-flights"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-06-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-06-30"
+								}
+							]
+						},
+						"description": "Generate flights for a date range based on flight entries"
+					}
+				},
+				{
+					"name": "Cancel Flight",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/catalogue/flight-entry/FL123/cancel?date=2024-06-10",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "catalogue", "flight-entry", "FL123", "cancel"],
+							"query": [
+								{
+									"key": "date",
+									"value": "2024-06-10"
+								}
+							]
+						},
+						"description": "Cancel a specific flight on a given date"
+					}
+				},
+				{
+					"name": "Get Generated Flights",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/catalogue/generated-flights?startDate=2024-06-01&endDate=2024-06-30&sourceAirportId=1&destinationAirportId=2",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "v1", "catalogue", "generated-flights"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-06-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-06-30"
+								},
+								{
+									"key": "sourceAirportId",
+									"value": "1"
+								},
+								{
+									"key": "destinationAirportId",
+									"value": "2"
+								}
+							]
+						},
+						"description": "Get list of generated flights for a date range and route"
+					}
+				}
+			]
+		}
+	]
+} 

@@ -15,6 +15,14 @@ import java.util.List;
 @Repository
 public interface FlightRepository extends JpaRepository<Flight, String> {
     
+    // Debug query to check all flights
+    @Query("SELECT f FROM Flight f")
+    List<Flight> findAllFlights();
+    
+    // Modified query to be more lenient for debugging
+    @Query("SELECT f FROM Flight f WHERE f.sourceAirport.id = :airportId")
+    List<Flight> findFlightsBySourceAirport(@Param("airportId") Long airportId);
+    
     @Query("SELECT f FROM Flight f WHERE f.sourceAirport = :airport " +
            "AND f.departureTime >= :afterTime " +
            "ORDER BY f.departureTime")

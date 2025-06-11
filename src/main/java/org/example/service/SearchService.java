@@ -4,6 +4,7 @@ import org.example.dto.*;
 import org.example.model.Airport;
 import org.example.model.Flight;
 import org.example.repository.FlightRepository;
+import org.example.repository.AirportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,9 +28,13 @@ public class SearchService {
     @Autowired
     private CacheService cacheService;
     
-    @Cacheable(value = "searchCache", key = "#request.sourceAirportId + ':' + #request.destinationAirportId + ':' + #request.date")
+    @Autowired
+    private AirportRepository airportRepository;
+    
+    //@Cacheable(value = "searchCache", key = "#p0.sourceAirportId + ':' + #p0.destinationAirportId + ':' + #p0.date")
     public SearchResponse search(SearchRequest request) {
         // Get source and destination airports
+        System.out.println("Processing request: " + request);
         Airport source = getAirport(request.getSourceAirportId());
         Airport destination = getAirport(request.getDestinationAirportId());
         
@@ -60,11 +65,13 @@ public class SearchService {
         response.setTotalCount(flightPaths.size());
         response.setPage(1); // TODO: Implement pagination
         response.setPageSize(flightPaths.size());
+
+        System.out.println("Processing2");
         
         return response;
     }
     
-    @Cacheable(value = "flightCache", key = "#id", unless = "#result == null")
+    //@Cacheable(value = "flightCache", key = "#id", unless = "#result == null")
     public FlightDetailsResponse getFlightDetails(String id) {
         Flight flight = flightRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Flight not found"));
@@ -86,7 +93,7 @@ public class SearchService {
     }
     
     @Transactional
-    @CacheEvict(value = "priceCache", key = "#request.flightId")
+    //@CacheEvict(value = "priceCache", key = "#request.flightId")
     public UpdateResponse updatePrice(PriceUpdateRequest request) {
         Flight flight = flightRepository.findById(request.getFlightId())
             .orElseThrow(() -> new RuntimeException("Flight not found"));
@@ -104,7 +111,7 @@ public class SearchService {
     }
     
     @Transactional
-    @CacheEvict(value = "seatCache", key = "#request.flightId")
+    //@CacheEvict(value = "seatCache", key = "#request.flightId")
     public UpdateResponse updateSeats(SeatUpdateRequest request) {
         Flight flight = flightRepository.findById(request.getFlightId())
             .orElseThrow(() -> new RuntimeException("Flight not found"));
@@ -129,7 +136,7 @@ public class SearchService {
     }
     
     @Transactional
-    @CacheEvict(value = "searchCache", allEntries = true)
+    //@CacheEvict(value = "searchCache", allEntries = true)
     public FlightDetailsResponse createFlight(FlightCreateRequest request) {
         // Validate request
         if (request.getAvailableSeats() > request.getTotalSeats()) {
@@ -150,7 +157,6 @@ public class SearchService {
         flight.setPrice(request.getPrice());
         flight.setTotalSeats(request.getTotalSeats());
         flight.setAvailableSeats(request.getAvailableSeats());
-        flight.setStops(request.getStops());
 
         // Save flight
         flight = flightRepository.save(flight);
@@ -204,7 +210,6 @@ public class SearchService {
         
         info.setDepartureTime(flight.getDepartureTime());
         info.setArrivalTime(flight.getArrivalTime());
-        info.setStops(flight.getStops());
         
         // Use cached seats if available
         Integer cachedSeats = cacheService.getCachedSeats(flight.getId());
@@ -267,7 +272,6 @@ public class SearchService {
         response.setPrice(flight.getPrice());
         response.setDepartureTime(flight.getDepartureTime());
         response.setArrivalTime(flight.getArrivalTime());
-        response.setStops(flight.getStops());
         response.setAvailableSeats(flight.getAvailableSeats());
         response.setTotalSeats(flight.getTotalSeats());
         
@@ -311,7 +315,7 @@ public class SearchService {
     }
     
     private Airport getAirport(Long id) {
-        // TODO: Implement airport repository
-        return new Airport();
+        return airportRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Airport not found with id: " + id));
     }
 } 
