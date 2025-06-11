@@ -85,4 +85,7 @@ public interface FlightRepository extends JpaRepository<Flight, String> {
         @Param("startDate") LocalDateTime startDate,
         @Param("endDate") LocalDateTime endDate
     );
+
+    @Query("SELECT f FROM Flight f WHERE f.flightNumber = :flightNumber")
+    List<Flight> findByFlightNumber(@Param("flightNumber") String flightNumber);
 } 

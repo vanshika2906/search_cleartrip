@@ -26,9 +26,9 @@ public class SearchController {
         return ResponseEntity.ok(searchService.search(request));
     }
     
-    @GetMapping("/flights/{id}")
-    public ResponseEntity<FlightDetailsResponse> getFlightDetails(@PathVariable String id) {
-        return ResponseEntity.ok(searchService.getFlightDetails(id));
+    @GetMapping("/flights/{flightNumber}")
+    public ResponseEntity<FlightDetailsResponse> getFlightDetails(@PathVariable("flightNumber") String flightNumber) {
+        return ResponseEntity.ok(searchService.getFlightDetails(flightNumber));
     }
     
     @PutMapping("/flights/price")

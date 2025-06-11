@@ -72,23 +72,28 @@ public class SearchService {
     }
     
     //@Cacheable(value = "flightCache", key = "#id", unless = "#result == null")
-    public FlightDetailsResponse getFlightDetails(String id) {
-        Flight flight = flightRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Flight not found"));
-            
+    public FlightDetailsResponse getFlightDetails(String flightNumber) {
+        List<Flight> flights = flightRepository.findByFlightNumber(flightNumber);
+
+        if (flights.isEmpty()) {
+            throw new RuntimeException("Flight not found with number: " + flightNumber);
+        }
+
+        // Get the first flight (you might want to add logic to handle multiple flights)
+        Flight flight = flights.get(0);
         FlightDetailsResponse response = convertToFlightDetails(flight);
-        
+
         // Enrich with latest price and seat data
-        BigDecimal cachedPrice = cacheService.getCachedPrice(id);
+        BigDecimal cachedPrice = cacheService.getCachedPrice(flight.getId());
         if (cachedPrice != null) {
             response.setPrice(cachedPrice);
         }
-        
-        Integer cachedSeats = cacheService.getCachedSeats(id);
+
+        Integer cachedSeats = cacheService.getCachedSeats(flight.getId());
         if (cachedSeats != null) {
             response.setAvailableSeats(cachedSeats);
         }
-        
+
         return response;
     }
     
