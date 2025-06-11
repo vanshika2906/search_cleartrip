@@ -1,18 +1,15 @@
--- Create Airport table
-CREATE TABLE IF NOT EXISTS airport (
+CREATE TABLE airport (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    code VARCHAR(3) NOT NULL UNIQUE,
+    code VARCHAR(255) NOT NULL UNIQUE,
     city VARCHAR(255) NOT NULL,
-    country VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    country VARCHAR(255) NOT NULL
 );
 
 -- Create Flight table
-CREATE TABLE IF NOT EXISTS flight (
-    id VARCHAR(36) PRIMARY KEY,
-    flight_number VARCHAR(10) NOT NULL,
+CREATE TABLE flight (
+    id VARCHAR(255) PRIMARY KEY,
+    flight_number VARCHAR(255) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     departure_time TIMESTAMP NOT NULL,
     arrival_time TIMESTAMP NOT NULL,
@@ -22,8 +19,6 @@ CREATE TABLE IF NOT EXISTS flight (
     available_seats INTEGER NOT NULL,
     total_seats INTEGER NOT NULL,
     status VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (source_airport_id) REFERENCES airport(id),
     FOREIGN KEY (destination_airport_id) REFERENCES airport(id)
 );
