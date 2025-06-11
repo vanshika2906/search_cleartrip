@@ -1,5 +1,6 @@
 package org.example.dto.catalogue;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -13,6 +14,7 @@ public class FlightEntryRequest {
     private List<String> daysAllowed;
     private String flightNumber;
     private Integer totalSeats;
+    private BigDecimal price;
 
     // Getters and Setters
     public Long getSourceAirportId() {
@@ -78,4 +80,14 @@ public class FlightEntryRequest {
     public void setTotalSeats(Integer totalSeats) {
         this.totalSeats = totalSeats;
     }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+
 } 

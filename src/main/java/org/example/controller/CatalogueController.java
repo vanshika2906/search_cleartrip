@@ -37,23 +37,23 @@ public class CatalogueController {
 
     @GetMapping("/flight-schedule")
     public ResponseEntity<List<FlightScheduleResponse>> getFlightSchedule(
-            @RequestParam Long sourceAirportId,
-            @RequestParam Long destinationAirportId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam("sourceAirportId") Long sourceAirportId,
+            @RequestParam("destinationAirportId") Long destinationAirportId,
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return ResponseEntity.ok(catalogueService.getFlightSchedule(
             sourceAirportId, destinationAirportId, startDate, endDate));
     }
 
-    @PutMapping("/flight-entry/{id}")
+    @PutMapping("/flight-entry/{flightNumber}")
     public ResponseEntity<Map<String, String>> updateFlightEntry(
-            @PathVariable String id,
+            @PathVariable("flightNumber") String flightNumber,
             @RequestBody FlightEntryRequest request) {
         try {
-            catalogueService.updateFlightEntry(id, request);
+            catalogueService.updateFlightEntry(flightNumber, request);
             return ResponseEntity.ok(Map.of(
                 "success", "true",
-                "message", "Flight entry updated successfully"
+                "message", "Flight entries updated successfully"
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of(
@@ -63,31 +63,13 @@ public class CatalogueController {
         }
     }
 
-    @PostMapping("/generate-flights")
-    public ResponseEntity<Map<String, Object>> generateFlights(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        try {
-            List<GeneratedFlightResponse> generatedFlights = catalogueService.generateFlights(startDate, endDate);
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Flights generated successfully",
-                "generated_flights", generatedFlights
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                "success", false,
-                "message", e.getMessage()
-            ));
-        }
-    }
 
-    @PostMapping("/flight-entry/{id}/cancel")
+    @PostMapping("/flight-entry/{flightNumber}/cancel")
     public ResponseEntity<Map<String, String>> cancelFlight(
-            @PathVariable String id,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @PathVariable("flightNumber") String flightNumber,
+            @RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         try {
-            catalogueService.cancelFlight(id, date);
+            catalogueService.cancelFlight(flightNumber, date);
             return ResponseEntity.ok(Map.of(
                 "success", "true",
                 "message", "Flight cancelled successfully"
@@ -100,13 +82,21 @@ public class CatalogueController {
         }
     }
 
-    @GetMapping("/generated-flights")
-    public ResponseEntity<List<GeneratedFlightResponse>> getGeneratedFlights(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(required = false) Long sourceAirportId,
-            @RequestParam(required = false) Long destinationAirportId) {
-        return ResponseEntity.ok(catalogueService.getGeneratedFlights(
-            startDate, endDate, sourceAirportId, destinationAirportId));
+    @DeleteMapping("/flight-entry/{flightNumber}")
+    public ResponseEntity<Map<String, String>> deleteFlightEntries(
+            @PathVariable("flightNumber") String flightNumber) {
+        try {
+            catalogueService.deleteFlightEntries(flightNumber);
+            return ResponseEntity.ok(Map.of(
+                "success", "true",
+                "message", "Flight entries deleted successfully"
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", "false",
+                "message", e.getMessage()
+            ));
+        }
     }
+
 } 
