@@ -21,7 +21,6 @@ public class PathFindingService {
     public List<List<Flight>> findPaths(Airport source, Airport destination, LocalDateTime date, int maxStops) {
         logger.info("Finding paths from {} to {} on {}", source.getCode(), destination.getCode(), date);
 
-        
         List<List<Flight>> allPaths = new ArrayList<>();
         Set<String> visited = new HashSet<>();
         List<Flight> currentPath = new ArrayList<>();
