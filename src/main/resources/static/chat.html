@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flight Chatbot</title>
+  <style>
+    body { font-family: Arial; margin: 30px; }
+    .chat-box { border: 1px solid #ccc; padding: 20px; width: 400px; }
+    .chat-log { height: 300px; overflow-y: scroll; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; }
+    .user-msg { font-weight: bold; }
+    .bot-msg { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+<div class="chat-box">
+  <div class="chat-log" id="chatLog"></div>
+  <input type="text" id="userInput" placeholder="Ask about flights..." style="width: 80%;" />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+  async function sendMessage() {
+    const input = document.getElementById("userInput").value;
+    const log = document.getElementById("chatLog");
+
+    log.innerHTML += `<div class="user-msg">You: ${input}</div>`;
+
+    const res = await fetch("http://localhost:8080/api/v1/search/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: input })
+    });
+
+    const data = await res.json();
+
+    log.innerHTML += `<div class="bot-msg"><strong>Bot:</strong> <pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+    document.getElementById("userInput").value = "";
+    log.scrollTop = log.scrollHeight;
+  }
+</script>
+</body>
+</html>
