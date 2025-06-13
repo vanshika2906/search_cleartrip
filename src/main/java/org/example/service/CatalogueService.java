@@ -67,7 +67,7 @@ public class CatalogueService {
             flight.setPrice(request.getPrice());
             
             // Set a unique ID for each flight
-            flight.setId(request.getFlightNumber() + "_" + date.toString());
+            flight.setId(String.valueOf(UUID.randomUUID()));
             
             flights.add(flight);
         }

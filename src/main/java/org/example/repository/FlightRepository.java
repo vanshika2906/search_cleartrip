@@ -90,5 +90,5 @@ public interface FlightRepository extends JpaRepository<Flight, String> {
     List<Flight> findByFlightNumber(@Param("flightNumber") String flightNumber);
 
     @Query("SELECT f FROM Flight f WHERE f.flightDate > :date")
-    List<Flight> findByFlightDateAfter(LocalDate date);
+    List<Flight> findByFlightDateAfter(@Param("date") LocalDate date);
 } 
