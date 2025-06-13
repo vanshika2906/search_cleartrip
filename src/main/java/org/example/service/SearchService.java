@@ -32,9 +32,12 @@ public class SearchService {
     @Autowired
     private AirportRepository airportRepository;
 
+    @Autowired
+    private FlightPathService flightPathService;
+
     public SearchResponse search(SearchRequest request) {
 
-        FlightDetails flightDetail = getFlightPaths(request);
+        FlightDetails flightDetail = flightPathService.getFlightPaths(request);
 
         List<FlightPath> flightPaths = flightDetail.getFlightPath().stream()
             .map(this::convertToFlightPath)
@@ -55,21 +58,6 @@ public class SearchService {
         return response;
     }
 
-    @Cacheable(value = "searchCache", key = "#p0.sourceAirportId + ':' + #p0.destinationAirportId + ':' + #p0.date")
-    public FlightDetails getFlightPaths(SearchRequest request) {
-        Airport source = getAirport(request.getSourceAirportId());
-        Airport destination = getAirport(request.getDestinationAirportId());
-
-        LocalDateTime searchDate = request.getDate().atStartOfDay();
-
-        List<List<Flight>> paths = pathFindingService.findPaths(
-                source, destination, searchDate, getMaxStops(request.getFilters())
-        );
-
-        FlightDetails flightDetails = new FlightDetails();
-        flightDetails.setFlightPath(paths);
-        return  flightDetails;
-    }
     
     @Cacheable(value = "flightCache", key = "#p0", unless = "#result == null")
     public FlightDetailsResponse getFlightDetails(String flightNumber) {

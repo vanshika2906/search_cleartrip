@@ -16,6 +16,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,8 +51,8 @@ public class RedisConfig {
 
         configMap.put("searchCache", createCacheConfig(FlightDetails.class, redisObjectMapper, Duration.ofHours(1)));
         configMap.put("flightCache", createCacheConfig(FlightDetailsResponse.class, redisObjectMapper, Duration.ofHours(1)));
-        //configMap.put("priceCache", createCacheConfig(PriceResponse.class, redisObjectMapper, Duration.ofMinutes(5)));
-        //configMap.put("seatCache", createCacheConfig(SeatResponse.class, redisObjectMapper, Duration.ofMinutes(1)));
+        configMap.put("priceCache", createCacheConfig(BigDecimal.class, redisObjectMapper, Duration.ofMinutes(5)));
+        configMap.put("seatCache", createCacheConfig(Integer.class, redisObjectMapper, Duration.ofMinutes(1)));
 
         return RedisCacheManager.builder(connectionFactory)
                 .withInitialCacheConfigurations(configMap)

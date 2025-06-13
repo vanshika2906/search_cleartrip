@@ -1,118 +1,90 @@
 package org.example.service;
 
-import org.example.dto.FlightDetailsResponse;
-import org.example.dto.FlightPath;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class CacheService {
 
     @Autowired
-    private CacheManager cacheManager;
-
-    @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    // Track cache misses to prevent cache stampede
     private final ConcurrentHashMap<String, AtomicInteger> cacheMissCounters = new ConcurrentHashMap<>();
     private static final int MAX_CACHE_MISSES = 3;
+    private static final long TEMP_NULL_TTL_SECONDS = 60;
 
-    // Search Cache Operations
-    //@Cacheable(value = "searchCache", key = "#sourceAirportId + ':' + #destinationAirportId + ':' + #date")
-    public List<FlightPath> getCachedPaths(Long sourceAirportId, Long destinationAirportId, String date) {
-        return null; // Will be populated by the service layer
-    }
+    // ==================== PRICE CACHE ====================
 
-    //@CacheEvict(value = "searchCache", key = "#searchKey")
-    public void invalidateSearchCache(String searchKey) {
-        // Method to explicitly invalidate specific search cache
-    }
-
-    // Price Cache Operations
-    //@Cacheable(value = "priceCache", key = "#flightId", unless = "#result == null")
     public BigDecimal getCachedPrice(String flightId) {
-        String cacheKey = "price:" + flightId;
-        if (shouldPreventCacheStampede(cacheKey)) {
+        String stampedeKey = "stampede:price:" + flightId;
+
+        if (shouldPreventCacheStampede(stampedeKey)) {
             return null;
         }
-        return null; // Will be populated by the service layer
+
+        return getPriceFromCache(flightId);
     }
 
-    //@CacheEvict(value = "priceCache", key = "#flightId")
+    @Cacheable(value = "priceCache", key = "#p0", unless = "#result == null")
+    public BigDecimal getPriceFromCache(String flightId) {
+        return null;
+    }
+
+    @CacheEvict(value = "priceCache", key = "#p0")
     public void invalidatePriceCache(String flightId) {
-        // Method to explicitly invalidate price cache for a specific flight
+        // Spring will auto-delete priceCache::flightId
     }
 
-    public void setCachedPrice(String flightId, BigDecimal price) {
-        if (price == null) {
-            return;
-        }
-        String key = "price:" + flightId;
-        redisTemplate.opsForValue().set(key, price.toString(), 1, TimeUnit.HOURS);
-    }
+    // ==================== SEAT CACHE ====================
 
-    // Seat Cache Operations
-    //@Cacheable(value = "seatCache", key = "#flightId", unless = "#result == null")
     public Integer getCachedSeats(String flightId) {
-        String cacheKey = "seat:" + flightId;
-        if (shouldPreventCacheStampede(cacheKey)) {
+        String stampedeKey = "stampede:seat:" + flightId;
+
+        if (shouldPreventCacheStampede(stampedeKey)) {
             return null;
         }
-        return null; // Will be populated by the service layer
+
+        return getSeatsFromCache(flightId);
     }
 
-    //@CacheEvict(value = "seatCache", key = "#flightId")
+    @Cacheable(value = "seatCache", key = "#p0", unless = "#result == null")
+    public Integer getSeatsFromCache(String flightId) {
+        return null;
+    }
+
+    @CacheEvict(value = "seatCache", key = "#p0")
     public void invalidateSeatCache(String flightId) {
-        // Method to explicitly invalidate seat cache for a specific flight
+        // Spring handles this
     }
 
-    public void setCachedSeats(String flightId, Integer seats) {
-        if (seats == null) {
-            return;
-        }
-        String key = "seats:" + flightId;
-        redisTemplate.opsForValue().set(key, seats.toString(), 1, TimeUnit.HOURS);
+    // ==================== SEARCH CACHE ====================
+
+    @CacheEvict(value = "searchCache", key = "#p0")
+    public void invalidateSearchCache(String searchKey) {
+        // Use same cache key pattern as in @Cacheable in SearchService
     }
 
-    // Flight Details Cache Operations
-    //@Cacheable(value = "flightCache", key = "#flightId", unless = "#result == null")
-    public FlightDetailsResponse getCachedFlightDetails(String flightId) {
-        String cacheKey = "flight:" + flightId;
-        if (shouldPreventCacheStampede(cacheKey)) {
-            return null;
-        }
-        return null; // Will be populated by the service layer
-    }
-
-    //@CacheEvict(value = "flightCache", key = "#flightId")
-    public void invalidateFlightCache(String flightId) {
-        // Method to explicitly invalidate flight details cache
-    }
-
-    // Helper method to prevent cache stampede
-    private boolean shouldPreventCacheStampede(String cacheKey) {
-        AtomicInteger missCounter = cacheMissCounters.computeIfAbsent(cacheKey, k -> new AtomicInteger(0));
+    // ==================== STAMPEDE PROTECTION ====================
+    private boolean shouldPreventCacheStampede(String stampedeKey) {
+        AtomicInteger missCounter = cacheMissCounters.computeIfAbsent(stampedeKey, k -> new AtomicInteger(0));
         int misses = missCounter.incrementAndGet();
-        
+
         if (misses >= MAX_CACHE_MISSES) {
-            missCounter.set(0); // Reset counter after max misses
+            missCounter.set(0);
+
+            // Optional Redis TTL-based lock
+            redisTemplate.opsForValue().set(stampedeKey, "LOCKED", TEMP_NULL_TTL_SECONDS, TimeUnit.SECONDS);
             return true;
         }
+
         return false;
     }
-
-    // Reset cache miss counter when data is successfully cached
-    public void resetCacheMissCounter(String cacheKey) {
-        cacheMissCounters.remove(cacheKey);
-    }
-} 
+}
