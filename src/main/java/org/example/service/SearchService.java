@@ -93,7 +93,7 @@ public class SearchService {
         flightRepository.save(flight);
         
         // Update price cache
-        cacheService.invalidatePriceCache(request.getFlightId());
+        cacheService.getCachedPrice(flight.getId());
         
         UpdateResponse response = new UpdateResponse();
         response.setSuccess(true);
@@ -118,7 +118,7 @@ public class SearchService {
         flightRepository.save(flight);
         
         // Update seat cache
-        cacheService.invalidateSeatCache(request.getFlightId());
+        cacheService.getPriceFromCache(flight.getId());
         
         UpdateResponse response = new UpdateResponse();
         response.setSuccess(true);
@@ -136,6 +136,7 @@ public class SearchService {
         for (Flight flight : flights) {
             BigDecimal cachedPrice = cacheService.getCachedPrice(flight.getId());
             totalPrice = totalPrice.add(cachedPrice != null ? cachedPrice : flight.getPrice());
+            flight.setPrice(cachedPrice != null ? cachedPrice : flight.getPrice());
         }
         path.setTotalPrice(totalPrice);
 
