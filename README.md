@@ -10,6 +10,8 @@ A microservice for handling flight search functionality in the Cleartrip system.
 - Flight schedule management
 - Caching with Redis
 - PostgreSQL database integration
+- Automated flight generation and updates
+- Chat-based flight search interface
 
 ## Tech Stack
 
@@ -20,6 +22,8 @@ A microservice for handling flight search functionality in the Cleartrip system.
 - Redis
 - Docker
 - Maven
+- Spring Scheduler
+- WebSocket for real-time chat
 
 ## Prerequisites
 
@@ -89,20 +93,47 @@ GET /api/v1/catalogue/flight-schedule
 PUT /api/v1/catalogue/flight-entry/{id}
 ```
 
-4. Generate Flights
-```
-POST /api/v1/catalogue/generate-flights
-```
-
-5. Cancel Flight
+4. Cancel Flight
 ```
 POST /api/v1/catalogue/flight-entry/{id}/cancel
 ```
 
-6. Get Generated Flights
+5. Delete Flight Entry
 ```
-GET /api/v1/catalogue/generated-flights
+DELETE /api/v1/catalogue/flight-entry/{flightNumber}
 ```
+
+### Chat APIs
+
+1. Chat Search
+```
+POST /api/v1/search/chat
+Body: {
+    "message": "string"  // Natural language query about flights
+}
+```
+
+The chat API supports natural language queries like:
+- "Show me flights from delhi to mumbai"
+- "Give me details about flight FL001"
+- "What are the flights from bangalore to delhi on april 1"
+
+The API will:
+- Extract source and destination airports
+- Parse dates from the message
+- Handle flight details queries
+- Return appropriate search results or flight details
+
+## Scheduled Tasks
+
+The service includes several scheduled tasks that run every 5 minutes:
+
+1. **Price & Seat Updates**
+   - Updates flight prices & seats based on demand and availability
+   - Applies dynamic pricing rules
+   - Syncs prices with external systems
+
+
 
 ## Database Schema
 
@@ -130,18 +161,44 @@ src/
 │   │       ├── service/
 │   │       ├── repository/
 │   │       ├── model/
-│   │       └── dto/
+│   │       ├── dto/
+│   │       ├── jobs/
 │   └── resources/
+        |── static 
 │       ├── application.properties
 │       ├── schema.sql
 │       └── data.sql
 └── test/
 ```
 
-### Running Tests
-```bash
-mvn test
-```
+
+## Future Enhancements
+
+### Chat Controller Improvements
+1. **Natural Language Processing**
+   - Implement NLP for better flight search understanding
+   - Add support for multiple languages
+   - Improve intent recognition
+
+2. **Real-time Features**
+   - Add typing indicators
+   - Implement read receipts
+   - Support file attachments for itineraries
+
+3. **AI Integration**
+   - Add AI-powered flight recommendations
+   - Implement smart price alerts
+   - Add personalized travel suggestions
+
+4. **Security Enhancements**
+   - Add end-to-end encryption
+   - Implement rate limiting
+   - Add session timeout handling
+
+5. **User Experience**
+   - Add rich message formatting
+   - Implement quick reply buttons
+   - Add voice input support
 
 ## Contributing
 

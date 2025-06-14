@@ -3,7 +3,6 @@ package org.example.service;
 import org.example.dto.*;
 import org.example.model.Airport;
 import org.example.model.Flight;
-import org.example.dto.FlightDetails;
 import org.example.repository.FlightRepository;
 import org.example.repository.AirportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Comparator;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,15 +63,10 @@ public class SearchService {
 
     
     @Cacheable(value = "flightCache", key = "#p0", unless = "#result == null")
-    public FlightDetailsResponse getFlightDetails(String flightNumber) {
-        List<Flight> flights = flightRepository.findByFlightNumber(flightNumber);
+    public FlightDetailsResponse getFlightDetails(String id) {
+        Flight flight = flightRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Flight not found"));
 
-        if (flights.isEmpty()) {
-            throw new RuntimeException("Flight not found with number: " + flightNumber);
-        }
-
-        // Get the first flight (you might want to add logic to handle multiple flights)
-        Flight flight = flights.get(0);
         FlightDetailsResponse response = convertToFlightDetails(flight);
 
         // Enrich with latest price and seat data
