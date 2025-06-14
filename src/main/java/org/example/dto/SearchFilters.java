@@ -10,5 +10,5 @@ import lombok.AllArgsConstructor;
 public class SearchFilters {
     private String stops;  // direct, one_stop, multiple_stops
     private PriceRange priceRange;
-    private Long[] airlines;
+    private String[] airlines;
 }

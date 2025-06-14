@@ -51,8 +51,8 @@ public class RedisConfig {
 
         configMap.put("searchCache", createCacheConfig(FlightDetails.class, redisObjectMapper, Duration.ofHours(1)));
         configMap.put("flightCache", createCacheConfig(FlightDetailsResponse.class, redisObjectMapper, Duration.ofHours(1)));
-        configMap.put("priceCache", createCacheConfig(BigDecimal.class, redisObjectMapper, Duration.ofMinutes(5)));
-        configMap.put("seatCache", createCacheConfig(Integer.class, redisObjectMapper, Duration.ofMinutes(1)));
+        configMap.put("priceCache", createCacheConfig(BigDecimal.class, redisObjectMapper, Duration.ofHours(1)));
+        configMap.put("seatCache", createCacheConfig(Integer.class, redisObjectMapper, Duration.ofHours(1)));
 
         return RedisCacheManager.builder(connectionFactory)
                 .withInitialCacheConfigurations(configMap)

@@ -190,14 +190,14 @@ public class SearchService {
                path.getTotalPrice().compareTo(BigDecimal.valueOf(range.getMaxPrice())) <= 0;
     }
     
-    private boolean filterByAirlines(FlightPath path, Long[] airlines) {
+    private boolean filterByAirlines(FlightPath path, String[] airlines) {
         if (airlines == null || airlines.length == 0) {
             return true;
         }
         
-        Set<Long> airlineSet = new HashSet<>(Arrays.asList(airlines));
+        Set<String> airlineSet = new HashSet<>(Arrays.asList(airlines));
         return path.getFlights().stream()
-            .anyMatch(flight -> airlineSet.contains(Long.parseLong(flight.getAirline())));
+            .anyMatch(flight -> airlineSet.contains(flight.getAirline()));
     }
     
     private void sortPaths(List<FlightPath> paths, String sortBy) {
